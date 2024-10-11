@@ -10,8 +10,8 @@ exports.BookmarkModule = void 0;
 const common_1 = require("@nestjs/common");
 let BookmarkModule = class BookmarkModule {
 };
-exports.BookmarkModule = BookmarkModule;
-exports.BookmarkModule = BookmarkModule = __decorate([
+BookmarkModule = __decorate([
     (0, common_1.Module)({})
 ], BookmarkModule);
+exports.BookmarkModule = BookmarkModule;
 //# sourceMappingURL=bookmark.module.js.map
