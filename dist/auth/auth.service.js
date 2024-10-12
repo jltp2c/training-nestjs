@@ -12,20 +12,65 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const argon = require("argon2");
+const library_1 = require("@prisma/client/runtime/library");
+const jwt_1 = require("@nestjs/jwt");
+const config_1 = require("@nestjs/config");
 let AuthService = class AuthService {
-    constructor(prisma) {
+    constructor(prisma, jwt, config) {
         this.prisma = prisma;
+        this.jwt = jwt;
+        this.config = config;
     }
-    signup() {
-        return { msg: 'i have signup' };
+    async signup(dto) {
+        const hash = await argon.hash(dto.password);
+        try {
+            const user = await this.prisma.user.create({
+                data: {
+                    email: dto.email,
+                    hash,
+                },
+            });
+            return this.signToken(user.id, user.email);
+        }
+        catch (error) {
+            if (error instanceof library_1.PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    throw new common_1.ForbiddenException('Credential taken');
+                }
+            }
+            throw error;
+        }
     }
-    signin() {
-        return { msg: 'i have signin' };
+    async signin(dto) {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email,
+            },
+        });
+        if (!user)
+            throw new common_1.ForbiddenException('Incorrect credentials');
+        const pwMatches = await argon.verify(user.hash, dto.password);
+        if (!pwMatches) {
+            throw new common_1.ForbiddenException('Credentials incorrect');
+        }
+        return this.signToken(user.id, user.email);
+    }
+    signToken(userId, email) {
+        const payload = {
+            sub: userId,
+            email,
+        };
+        const secret = this.config.get('JWT_SECRET');
+        const token = this.jwt.signAsync(payload, { expiresIn: '15m', secret });
+        return { access_token: token };
     }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        jwt_1.JwtService,
+        config_1.ConfigService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map
