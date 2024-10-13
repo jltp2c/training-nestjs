@@ -9,5 +9,4 @@ export declare class UserController {
         firstName: string;
         lastName: string;
     };
-    editUser(): void;
 }

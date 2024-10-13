@@ -20,7 +20,6 @@ let UserController = class UserController {
     getMe(user) {
         return user;
     }
-    editUser() { }
 };
 __decorate([
     (0, common_1.Get)('me'),
@@ -29,12 +28,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "getMe", null);
-__decorate([
-    (0, common_1.Patch)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], UserController.prototype, "editUser", null);
 UserController = __decorate([
     (0, common_1.UseGuards)(guard_1.JwtGuard),
     (0, common_1.Controller)('users')
