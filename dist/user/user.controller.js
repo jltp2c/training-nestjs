@@ -12,39 +12,32 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthController = void 0;
+exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
-const auth_service_1 = require("./auth.service");
-const dto_1 = require("./dto");
-let AuthController = class AuthController {
-    constructor(authService) {
-        this.authService = authService;
+const get_user_decorator_1 = require("../auth/decorator/get-user.decorator");
+const guard_1 = require("../auth/guard");
+let UserController = class UserController {
+    getMe(user) {
+        return user;
     }
-    signup(dto) {
-        return this.authService.signup(dto);
-    }
-    signin(dto) {
-        return this.authService.signin(dto);
-    }
+    editUser() { }
 };
 __decorate([
-    (0, common_1.Post)('signup'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Get)('me'),
+    __param(0, (0, get_user_decorator_1.GetUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.AuthDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], AuthController.prototype, "signup", null);
+], UserController.prototype, "getMe", null);
 __decorate([
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, common_1.Post)('signin'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Patch)(),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [dto_1.AuthDto]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], AuthController.prototype, "signin", null);
-AuthController = __decorate([
-    (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
-], AuthController);
-exports.AuthController = AuthController;
-//# sourceMappingURL=auth.controller.js.map
+], UserController.prototype, "editUser", null);
+UserController = __decorate([
+    (0, common_1.UseGuards)(guard_1.JwtGuard),
+    (0, common_1.Controller)('users')
+], UserController);
+exports.UserController = UserController;
+//# sourceMappingURL=user.controller.js.map

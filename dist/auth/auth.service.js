@@ -56,13 +56,16 @@ let AuthService = class AuthService {
         }
         return this.signToken(user.id, user.email);
     }
-    signToken(userId, email) {
+    async signToken(userId, email) {
         const payload = {
             sub: userId,
             email,
         };
         const secret = this.config.get('JWT_SECRET');
-        const token = this.jwt.signAsync(payload, { expiresIn: '15m', secret });
+        const token = await this.jwt.signAsync(payload, {
+            expiresIn: '15m',
+            secret,
+        });
         return { access_token: token };
     }
 };
